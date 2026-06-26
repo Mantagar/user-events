@@ -1,0 +1,45 @@
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: user-events-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: user_events
+      POSTGRES_USER: localUSER
+      POSTGRES_PASSWORD: localPASSWORD
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - user-events-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: user-events-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - user-events-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  user-events-network:
+    driver: bridge
