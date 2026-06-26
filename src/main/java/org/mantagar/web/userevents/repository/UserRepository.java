@@ -12,5 +12,4 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     Iterable<Integer> findAllIds();
 
     boolean existsByNameAndSurname(String name, String surname);
-
 }
