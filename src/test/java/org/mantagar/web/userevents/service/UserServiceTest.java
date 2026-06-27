@@ -12,8 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mantagar.web.userevents.dto.UserDTO;
 import org.mantagar.web.userevents.entity.User;
-import org.mantagar.web.userevents.exceptions.UserAlreadyExistsException;
-import org.mantagar.web.userevents.exceptions.UserDoesNotExistException;
+import org.mantagar.web.userevents.exception.UserAlreadyExistsException;
+import org.mantagar.web.userevents.exception.UserDoesNotExistException;
+import org.mantagar.web.userevents.publisher.UserEventsPublisher;
 import org.mantagar.web.userevents.repository.UserRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UserServiceTest {
 
     @Mock private UserRepository mockUserRepository;
-
+    @Mock private UserEventsPublisher mockEventsPublisher;
     @InjectMocks private UserService userService;
 
     @Test

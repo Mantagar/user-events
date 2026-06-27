@@ -1,9 +1,10 @@
 package org.mantagar.web.userevents.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.mantagar.web.userevents.dto.UserDTO;
 import org.mantagar.web.userevents.entity.User;
-import org.mantagar.web.userevents.exceptions.UserAlreadyExistsException;
-import org.mantagar.web.userevents.exceptions.UserDoesNotExistException;
+import org.mantagar.web.userevents.exception.UserAlreadyExistsException;
+import org.mantagar.web.userevents.exception.UserDoesNotExistException;
 import org.mantagar.web.userevents.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService service;
-
-    public UserController(UserService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public Iterable<Integer> getAllUserIds() {

@@ -1,3 +1,3 @@
-package org.mantagar.web.userevents.exceptions;
+package org.mantagar.web.userevents.exception;
 
 public class UserAlreadyExistsException extends Exception {}
