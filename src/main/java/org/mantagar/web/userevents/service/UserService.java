@@ -5,10 +5,14 @@ import org.mantagar.web.userevents.entity.User;
 import org.mantagar.web.userevents.exceptions.UserAlreadyExistsException;
 import org.mantagar.web.userevents.exceptions.UserDoesNotExistException;
 import org.mantagar.web.userevents.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
+
+    private final static Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository repository;
 
@@ -17,16 +21,19 @@ public class UserService {
     }
 
     public Iterable<Integer> getAllUserIds() {
+        LOG.info("Getting all user ids");
         return repository.findAllIds();
     }
 
     public User getUserById(Integer id) throws UserDoesNotExistException {
+        LOG.info("Getting user by id: {}", id);
         return repository.findById(id).orElseThrow(UserDoesNotExistException::new);
     }
 
     public User createUser(UserDTO userDTO) throws UserAlreadyExistsException {
         // only unique pairs of name + surname are valid
         if (repository.existsByNameAndSurname(userDTO.name(), userDTO.surname())) {
+            LOG.error("User with name {} and surname {} already exists", userDTO.name(), userDTO.surname());
             throw new UserAlreadyExistsException();
         }
         User user = new User();

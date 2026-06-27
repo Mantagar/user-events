@@ -16,5 +16,4 @@ TODO
 
 add Kafka
 
-add Logging
 

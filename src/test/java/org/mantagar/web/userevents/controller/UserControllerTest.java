@@ -28,7 +28,7 @@ class UserControllerTest {
     @MockitoBean private UserService userService;
 
     @Test
-    void testGetAllUserIds() throws Exception {
+    void shouldReturnListOfIds_onRestGet() throws Exception {
         List<Integer> mock = List.of(1, 2, 3);
         when(userService.getAllUserIds()).thenReturn(mock);
 
@@ -38,7 +38,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetUserById_userExists() throws Exception {
+    void shouldReturnUser_onRestGetWithId_whenIdUserExists() throws Exception {
         User mock = new User();
         mock.setId(5);
         mock.setName("test");
@@ -54,14 +54,14 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetUserById_userDoesNotExist() throws Exception {
+    void shouldReturn404_onRestGetWithId_whenIdUserDoesNotExist() throws Exception {
         when(userService.getUserById(5)).thenThrow(new UserDoesNotExistException());
 
         mockMvc.perform(get("/users/5")).andExpect(status().is(HttpStatus.NOT_FOUND.value()));
     }
 
     @Test
-    void testCreateUser_successfully() throws Exception {
+    void shouldReturn201andUser_onRestPost_whenUserDoesNotExist() throws Exception {
         UserDTO rqMock = new UserDTO("test", "test");
         User rsMock = new User();
         rsMock.setId(5);
@@ -81,7 +81,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testCreateUser_userAlreadyExists() throws Exception {
+    void shouldReturn409_onRestPost_whenUserAlreadyExists() throws Exception {
         UserDTO mock = new UserDTO("test", "test");
 
         when(userService.createUser(mock)).thenThrow(new UserAlreadyExistsException());
