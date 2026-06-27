@@ -12,9 +12,3 @@ PGADMIN
 
 http://localhost:5050
 
-TODO 
-
-# TODO 
-
-add Kafka
-

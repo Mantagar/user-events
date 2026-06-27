@@ -30,13 +30,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable Integer userId) throws UserDoesNotExistException {
+    public User getUserById(@PathVariable Integer userId) {
         return service.getUserById(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody UserDTO user) throws UserAlreadyExistsException {
+    public User createUser(@RequestBody UserDTO user) {
         return service.createUser(user);
     }
 

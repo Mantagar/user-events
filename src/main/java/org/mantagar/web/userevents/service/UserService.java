@@ -25,13 +25,13 @@ public class UserService {
         return repository.findAllIds();
     }
 
-    public User getUserById(Integer id) throws UserDoesNotExistException {
+    public User getUserById(Integer id) {
         final User user = repository.findById(id).orElseThrow(UserDoesNotExistException::new);
         eventsPublisher.publishEvent(PublisherTopic.USER_BROWSED, user);
         return user;
     }
 
-    public User createUser(UserDTO userDTO) throws UserAlreadyExistsException {
+    public User createUser(UserDTO userDTO) {
         // only unique pairs of name + surname are valid
         if (repository.existsByNameAndSurname(userDTO.name(), userDTO.surname())) {
             LOG.error("User {} already exists", userDTO);
