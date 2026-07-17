@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.mantagar.web.userevents.dto.UserDTO;
+import org.mantagar.web.userevents.dto.UserNameSurnameDTO;
 import org.mantagar.web.userevents.entity.User;
 import org.mantagar.web.userevents.exception.UserAlreadyExistsException;
 import org.mantagar.web.userevents.exception.UserDoesNotExistException;
@@ -29,7 +29,7 @@ class UserControllerTest {
 
     @Test
     void shouldReturn200() throws Exception {
-        List<Integer> expected = List.of(1, 2, 3);
+        List<Long> expected = List.of(1, 2, 3);
         when(userService.getAllUserIds()).thenReturn(expected);
 
         mockMvc.perform(get("/users"))
@@ -44,7 +44,7 @@ class UserControllerTest {
         expectedUser.setName("test");
         expectedUser.setSurname("test");
 
-        when(userService.getUserById(5)).thenReturn(expectedUser);
+        when(userService.getUser(5)).thenReturn(expectedUser);
 
         mockMvc.perform(get("/users/5"))
                 .andExpect(status().isOk())
@@ -55,20 +55,20 @@ class UserControllerTest {
 
     @Test
     void shouldReturn404_whenUserNotFound() throws Exception {
-        when(userService.getUserById(5)).thenThrow(new UserDoesNotExistException());
+        when(userService.getUser(5)).thenThrow(new UserDoesNotExistException());
 
         mockMvc.perform(get("/users/5")).andExpect(status().is(HttpStatus.NOT_FOUND.value()));
     }
 
     @Test
     void shouldReturn201_whenUserCreated() throws Exception {
-        UserDTO testUserDTO = new UserDTO("test", "test");
+        UserNameSurnameDTO testUserNameSurnameDTO = new UserNameSurnameDTO("test", "test");
         User expectedUser = new User();
         expectedUser.setId(5);
         expectedUser.setName("test");
         expectedUser.setSurname("test");
 
-        when(userService.createUser(testUserDTO)).thenReturn(expectedUser);
+        when(userService.createUser(testUserNameSurnameDTO)).thenReturn(expectedUser);
 
         mockMvc.perform(
                         post("/users")
@@ -82,7 +82,7 @@ class UserControllerTest {
 
     @Test
     void shouldReturn409_whenUserAlreadyExists() throws Exception {
-        UserDTO expectedUser = new UserDTO("test", "test");
+        UserNameSurnameDTO expectedUser = new UserNameSurnameDTO("test", "test");
 
         when(userService.createUser(expectedUser)).thenThrow(new UserAlreadyExistsException());
 

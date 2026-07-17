@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.mantagar.web.userevents.dto.UserDTO;
+import org.mantagar.web.userevents.dto.UserNameSurnameDTO;
 import org.mantagar.web.userevents.entity.User;
 import org.mantagar.web.userevents.publisher.PublisherTopic;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +63,10 @@ public class EndToEndIntegrationTest {
     @Order(1)
     void shouldPublishUserCreated_whenPOST() {
         String url = "http://localhost:%d/users".formatted(port);
-        UserDTO rqUserDTO = new UserDTO("test", "test");
+        UserNameSurnameDTO rqUserNameSurnameDTO = new UserNameSurnameDTO("test", "test");
 
-        ResponseEntity<User> response = restTemplate.postForEntity(url, rqUserDTO, User.class);
+        ResponseEntity<User> response =
+                restTemplate.postForEntity(url, rqUserNameSurnameDTO, User.class);
 
         // verify that the db was reached and the entry was created
         assertEquals(201, response.getStatusCode().value());

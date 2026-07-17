@@ -19,7 +19,7 @@ import lombok.Setter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq_gen")
-    private Integer id;
+    private Long id;
 
     private String name;
     private String surname;

@@ -1,10 +1,9 @@
 package org.mantagar.web.userevents.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.mantagar.web.userevents.dto.UserDTO;
+import org.mantagar.web.userevents.dto.UserNameSurnameDTO;
 import org.mantagar.web.userevents.entity.User;
 import org.mantagar.web.userevents.exception.UserAlreadyExistsException;
-import org.mantagar.web.userevents.exception.UserDoesNotExistException;
 import org.mantagar.web.userevents.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,31 +21,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService service;
+    private final UserService userService;
 
     @GetMapping
-    public Iterable<Integer> getAllUserIds() {
-        return service.getAllUserIds();
+    public Iterable<Long> getAllUserIds() {
+        return userService.getAllUserIds();
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable Integer userId) {
-        return service.getUserById(userId);
+    public User getUser(@PathVariable Long userId) {
+        return userService.getUser(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody UserDTO user) {
-        return service.createUser(user);
+    public User createUser(@RequestBody UserNameSurnameDTO userNameSurnameDTO) {
+        return userService.createUser(userNameSurnameDTO);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists");
-    }
-
-    @ExceptionHandler(UserDoesNotExistException.class)
-    public ResponseEntity<String> handleUserDoesNotExistException(UserDoesNotExistException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
     }
 }
