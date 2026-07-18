@@ -30,7 +30,7 @@ class UserServiceTest {
     void getAllUserIds_always_returnsIds() {
         var expected = List.of(1L, 2L, 3L);
 
-        when(mockUserRepository.findAllBy()).thenReturn(expected);
+        when(mockUserRepository.findAllIds()).thenReturn(expected);
 
         assertEquals(expected, userService.getAllUserIds());
     }

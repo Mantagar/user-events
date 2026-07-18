@@ -24,7 +24,7 @@ public class UserService {
     private final UserEventsPublisher eventsPublisher;
 
     public Iterable<Long> getAllUserIds() {
-        return userRepository.findAllBy();
+        return userRepository.findAllIds();
     }
 
     public User getUser(Long id) {
@@ -37,7 +37,7 @@ public class UserService {
         return user.get();
     }
 
-    // TODO add @Transactional (with default readOnly = false)
+    @Transactional
     public User createUser(CreateUserRequest createUserRequest) {
         // only unique pairs of name + surname are valid - that could be achieved by unique
         // constraint TODO

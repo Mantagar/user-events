@@ -1,19 +1,17 @@
 package org.mantagar.web.userevents.post;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.mantagar.web.userevents.post.dto.CreatePostRequest;
 import org.mantagar.web.userevents.post.dto.PostNoUserResponse;
 import org.mantagar.web.userevents.post.model.Post;
 import org.mantagar.web.userevents.user.UserRepository;
-import org.mantagar.web.userevents.user.UserService;
 import org.mantagar.web.userevents.user.exception.UserNotFoundException;
 import org.mantagar.web.userevents.user.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,7 +33,7 @@ public class PostService {
         return postRepository.findByIdAndUserId(postId, userId);
     }
 
-    // TODO add @Transactional (with default readOnly = false)
+    @Transactional
     public PostNoUserResponse createPost(CreatePostRequest createPostRequest) {
         final Optional<User> user = userRepository.findById(createPostRequest.userId());
         if (user.isEmpty()) {

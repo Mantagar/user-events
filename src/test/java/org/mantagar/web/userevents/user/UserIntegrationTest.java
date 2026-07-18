@@ -3,15 +3,13 @@ package org.mantagar.web.userevents.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.List;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.mantagar.web.userevents.publisher.PublisherTopic;
 import org.mantagar.web.userevents.user.dto.CreateUserRequest;
 import org.mantagar.web.userevents.user.model.User;
@@ -27,14 +25,9 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
-/**
- * DO NOT CALL SELECT TESTS - they need to be called in a specific order as some rely on the state
- * created by the others.
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestRestTemplate
 @EmbeddedKafka(topics = {"user-created", "user-browsed"})
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserIntegrationTest {
     // TODO rename methods to follow BDD, use @DisplayName for descriptions
@@ -47,10 +40,10 @@ public class UserIntegrationTest {
 
     @BeforeAll
     public void init() {
-        restTestClient = RestTestClient
-                .bindToController(userController)
-                .baseUrl("http://localhost:%d/users".formatted(port))
-                .build();
+        restTestClient =
+                RestTestClient.bindToController(userController)
+                        .baseUrl("http://localhost:%d".formatted(port))
+                        .build();
 
         var consumerProperties =
                 KafkaTestUtils.consumerProps(embeddedKafkaBroker, "test-group", false);
@@ -62,55 +55,69 @@ public class UserIntegrationTest {
     }
 
     @Test
-    @Order(1)
-    void shouldPublishUserCreated_whenPOST() {
+    void userCreationAndBrowsingWorkflow() {
+        // STEP 1: create a User using REST API
         var createUserRequest = new CreateUserRequest("test", "test");
-        var rsUser = restTestClient
+        restTestClient
                 .post()
+                .uri("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(createUserRequest)
                 .exchange()
-                .expectStatus().isCreated()
-                .expectBody(User.class).value(user -> {
-                    assertNotNull(user);
-                    assertEquals(1, user.getId());
-                    assertEquals("test", user.getName());
-                    assertEquals("test", user.getSurname());
-                })
-                .returnResult()
-                .getResponseBody();
+                .expectStatus()
+                .isCreated()
+                .expectBody(User.class)
+                .value(
+                        user -> {
+                            assertNotNull(user);
+                            assertEquals(1, user.getId());
+                            assertEquals("test", user.getName());
+                            assertEquals("test", user.getSurname());
+                        });
 
-        // verify that kafka event was published
+        // STEP 2: verify "user-created" event was published
         var record = consumeKafkaEvent(PublisherTopic.USER_CREATED);
         assertNotNull(record.value());
-        assertEquals(rsUser.getId(), record.value().getId());
-        assertEquals(rsUser.getName(), record.value().getName());
-        assertEquals(rsUser.getSurname(), record.value().getSurname());
-    }
+        assertEquals(1, record.value().getId());
+        assertEquals("test", record.value().getName());
+        assertEquals("test", record.value().getSurname());
 
-    @Test
-    @Order(2)
-    void shouldPublishUserBrowsed_whenGET() {
-        var rsUser = restTestClient
+        // STEP 3: fetch the created User using REST API
+        restTestClient
                 .get()
-                .uri("/1")
+                .uri("/users")
                 .exchange()
-                .expectStatus().isOk()
-                .expectBody(User.class).value(user -> {
-                    assertNotNull(user);
-                    assertEquals(1, user.getId());
-                    assertEquals("test", user.getName());
-                    assertEquals("test", user.getSurname());
-                })
-                .returnResult()
-                .getResponseBody();
+                .expectStatus()
+                .isOk()
+                .expectBody(List.class)
+                .value(
+                        userIds -> {
+                            assertNotNull(userIds);
+                            assertEquals(1, userIds.size());
+                            assertEquals(1, userIds.getFirst());
+                        });
+        ;
+        restTestClient
+                .get()
+                .uri("/users/1")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(User.class)
+                .value(
+                        user -> {
+                            assertNotNull(user);
+                            assertEquals(1, user.getId());
+                            assertEquals("test", user.getName());
+                            assertEquals("test", user.getSurname());
+                        });
 
-        // verify that kafka event was published
-        var record = consumeKafkaEvent(PublisherTopic.USER_BROWSED);
+        // STEP 4: verify "user-browsed" event was published
+        record = consumeKafkaEvent(PublisherTopic.USER_BROWSED);
         assertNotNull(record.value());
-        assertEquals(rsUser.getId(), record.value().getId());
-        assertEquals(rsUser.getName(), record.value().getName());
-        assertEquals(rsUser.getSurname(), record.value().getSurname());
+        assertEquals(1, record.value().getId());
+        assertEquals("test", record.value().getName());
+        assertEquals("test", record.value().getSurname());
     }
 
     private ConsumerRecord<String, User> consumeKafkaEvent(PublisherTopic publisherTopic) {
