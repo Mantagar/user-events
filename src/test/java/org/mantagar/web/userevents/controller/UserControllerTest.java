@@ -28,8 +28,8 @@ class UserControllerTest {
     @MockitoBean private UserService userService;
 
     @Test
-    void shouldReturn200() throws Exception {
-        List<Long> expected = List.of(1, 2, 3);
+    void getAllUserIds_always_shouldReturn200() throws Exception {
+        List<Long> expected = List.of(1L, 2L, 3L);
         when(userService.getAllUserIds()).thenReturn(expected);
 
         mockMvc.perform(get("/users"))
@@ -38,33 +38,33 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldReturn200_whenUserExists() throws Exception {
+    void getUser_whenUserExists_shouldReturn200() throws Exception {
         User expectedUser = new User();
-        expectedUser.setId(5);
+        expectedUser.setId(5L);
         expectedUser.setName("test");
         expectedUser.setSurname("test");
 
-        when(userService.getUser(5)).thenReturn(expectedUser);
+        when(userService.getUser(5L)).thenReturn(expectedUser);
 
         mockMvc.perform(get("/users/5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.id").value(5L))
                 .andExpect(jsonPath("$.name").value("test"))
                 .andExpect(jsonPath("$.surname").value("test"));
     }
 
     @Test
-    void shouldReturn404_whenUserNotFound() throws Exception {
-        when(userService.getUser(5)).thenThrow(new UserDoesNotExistException());
+    void getUser_whenUserNotFound_shouldReturn404() throws Exception {
+        when(userService.getUser(5L)).thenThrow(new UserDoesNotExistException(""));
 
         mockMvc.perform(get("/users/5")).andExpect(status().is(HttpStatus.NOT_FOUND.value()));
     }
 
     @Test
-    void shouldReturn201_whenUserCreated() throws Exception {
+    void createUser_whenSuccessful_shouldReturn201() throws Exception {
         UserNameSurnameDTO testUserNameSurnameDTO = new UserNameSurnameDTO("test", "test");
         User expectedUser = new User();
-        expectedUser.setId(5);
+        expectedUser.setId(5L);
         expectedUser.setName("test");
         expectedUser.setSurname("test");
 
@@ -75,21 +75,21 @@ class UserControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"id\":\"1\",\"name\":\"test\",\"surname\":\"test\"}"))
                 .andExpect(status().is(HttpStatus.CREATED.value()))
-                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.id").value(5L))
                 .andExpect(jsonPath("$.name").value("test"))
                 .andExpect(jsonPath("$.surname").value("test"));
     }
 
     @Test
-    void shouldReturn409_whenUserAlreadyExists() throws Exception {
+    void createUser_whenUserAlreadyExists_shouldReturn409() throws Exception {
         UserNameSurnameDTO expectedUser = new UserNameSurnameDTO("test", "test");
 
-        when(userService.createUser(expectedUser)).thenThrow(new UserAlreadyExistsException());
+        when(userService.createUser(expectedUser)).thenThrow(new UserAlreadyExistsException(""));
 
         mockMvc.perform(
-                        post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"id\":\"1\",\"name\":\"test\",\"surname\":\"test\"}"))
+                    post("/users")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"id\":\"1\",\"name\":\"test\",\"surname\":\"test\"}"))
                 .andExpect(status().is(HttpStatus.CONFLICT.value()));
     }
 }

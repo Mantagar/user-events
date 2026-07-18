@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -26,9 +28,13 @@ public class UserService {
     }
 
     public User getUser(Long id) {
-        final User user = userRepository.findById(id).orElseThrow(UserDoesNotExistException::new);
-        eventsPublisher.publishEvent(PublisherTopic.USER_BROWSED, user);
-        return user;
+        final Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            LOG.error("User with id={} not found", id);
+            throw new UserDoesNotExistException("User with id=%d not found".formatted(id));
+        }
+        eventsPublisher.publishEvent(PublisherTopic.USER_BROWSED, user.get());
+        return user.get();
     }
 
     public User createUser(UserNameSurnameDTO userNameSurnameDTO) {
@@ -36,7 +42,7 @@ public class UserService {
         if (userRepository.existsByNameAndSurname(
                 userNameSurnameDTO.name(), userNameSurnameDTO.surname())) {
             LOG.error("User {} already exists", userNameSurnameDTO);
-            throw new UserAlreadyExistsException();
+            throw new UserAlreadyExistsException("User %s already exists".formatted(userNameSurnameDTO));
         }
         final User user = new User();
         user.setName(userNameSurnameDTO.name());

@@ -29,7 +29,7 @@ class UserServiceTest {
 
     @Test
     void shouldReturnIdList() {
-        List<Long> expected = List.of(1, 2, 3);
+        List<Long> expected = List.of(1L, 2L, 3L);
         when(mockUserRepository.findAllBy()).thenReturn(expected);
 
         assertEquals("", expected, userService.getAllUserIds());
@@ -38,25 +38,25 @@ class UserServiceTest {
     @Test
     void shouldReturnUser_whenUserExists() {
         User expectedUser = new User();
-        expectedUser.setId(5);
+        expectedUser.setId(5L);
         expectedUser.setName("test");
         expectedUser.setSurname("test");
-        when(mockUserRepository.findById(5)).thenReturn(Optional.of(expectedUser));
+        when(mockUserRepository.findById(5L)).thenReturn(Optional.of(expectedUser));
 
-        User createdUser = assertDoesNotThrow(() -> userService.getUser(5));
+        User createdUser = assertDoesNotThrow(() -> userService.getUser(5L));
         assertEquals("", expectedUser, createdUser);
     }
 
     @Test
     void shouldThrowException_whenUserNotFound() {
-        assertThrows(UserDoesNotExistException.class, () -> userService.getUser(5));
+        assertThrows(UserDoesNotExistException.class, () -> userService.getUser(5L));
     }
 
     @Test
     void shouldReturnUser_whenUserCreated() {
         UserNameSurnameDTO testUserNameSurnameDTO = new UserNameSurnameDTO("test", "test");
         User expectedUser = new User();
-        expectedUser.setId(5);
+        expectedUser.setId(5L);
         expectedUser.setName("test");
         expectedUser.setSurname("test");
         when(mockUserRepository.existsByNameAndSurname("test", "test")).thenReturn(false);
@@ -70,7 +70,7 @@ class UserServiceTest {
     void shouldThrowException_whenUserAlreadyExists() {
         UserNameSurnameDTO testUserNameSurnameDTO = new UserNameSurnameDTO("test", "test");
         User expectedUser = new User();
-        expectedUser.setId(5);
+        expectedUser.setId(5L);
         expectedUser.setName("test");
         expectedUser.setSurname("test");
         when(mockUserRepository.existsByNameAndSurname("test", "test")).thenReturn(true);
