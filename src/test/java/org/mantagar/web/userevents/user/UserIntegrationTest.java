@@ -16,15 +16,16 @@ import org.mantagar.web.userevents.publisher.PublisherTopic;
 import org.mantagar.web.userevents.user.dto.CreateUserRequest;
 import org.mantagar.web.userevents.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 /**
  * DO NOT CALL SELECT TESTS - they need to be called in a specific order as some rely on the state
@@ -38,13 +39,19 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 public class UserIntegrationTest {
     // TODO rename methods to follow BDD, use @DisplayName for descriptions
     @LocalServerPort private int port;
+    @Autowired private UserController userController;
+    private RestTestClient restTestClient;
 
-    @Autowired private TestRestTemplate restTemplate;
     @Autowired private EmbeddedKafkaBroker embeddedKafkaBroker;
     private Consumer<String, User> kafkaConsumer;
 
     @BeforeAll
-    public void initKafkaConsumer() {
+    public void init() {
+        restTestClient = RestTestClient
+                .bindToController(userController)
+                .baseUrl("http://localhost:%d/users".formatted(port))
+                .build();
+
         var consumerProperties =
                 KafkaTestUtils.consumerProps(embeddedKafkaBroker, "test-group", false);
         consumerProperties.put(
@@ -57,22 +64,24 @@ public class UserIntegrationTest {
     @Test
     @Order(1)
     void shouldPublishUserCreated_whenPOST() {
-        var url = "http://localhost:%d/users".formatted(port);
         var createUserRequest = new CreateUserRequest("test", "test");
-
-        var responseEntity = restTemplate.postForEntity(url, createUserRequest, User.class);
-
-        // verify that the db was reached and the entry was created
-        assertEquals(201, responseEntity.getStatusCode().value());
-        var rsUser = responseEntity.getBody();
-        assertNotNull(rsUser);
-        assertEquals(1, rsUser.getId());
-        assertEquals("test", rsUser.getName());
-        assertEquals("test", rsUser.getSurname());
-
-        var record = consumeKafkaEvent(PublisherTopic.USER_CREATED);
+        var rsUser = restTestClient
+                .post()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(createUserRequest)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(User.class).value(user -> {
+                    assertNotNull(user);
+                    assertEquals(1, user.getId());
+                    assertEquals("test", user.getName());
+                    assertEquals("test", user.getSurname());
+                })
+                .returnResult()
+                .getResponseBody();
 
         // verify that kafka event was published
+        var record = consumeKafkaEvent(PublisherTopic.USER_CREATED);
         assertNotNull(record.value());
         assertEquals(rsUser.getId(), record.value().getId());
         assertEquals(rsUser.getName(), record.value().getName());
@@ -82,21 +91,22 @@ public class UserIntegrationTest {
     @Test
     @Order(2)
     void shouldPublishUserBrowsed_whenGET() {
-        var url = "http://localhost:%d/users/1".formatted(port);
-
-        var responseEntity = restTemplate.getForEntity(url, User.class);
-
-        // verify that the db was reached and the entry was returned
-        assertEquals(200, responseEntity.getStatusCode().value());
-        var rsUser = responseEntity.getBody();
-        assertNotNull(rsUser);
-        assertEquals(1, rsUser.getId());
-        assertEquals("test", rsUser.getName());
-        assertEquals("test", rsUser.getSurname());
-
-        var record = consumeKafkaEvent(PublisherTopic.USER_BROWSED);
+        var rsUser = restTestClient
+                .get()
+                .uri("/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(User.class).value(user -> {
+                    assertNotNull(user);
+                    assertEquals(1, user.getId());
+                    assertEquals("test", user.getName());
+                    assertEquals("test", user.getSurname());
+                })
+                .returnResult()
+                .getResponseBody();
 
         // verify that kafka event was published
+        var record = consumeKafkaEvent(PublisherTopic.USER_BROWSED);
         assertNotNull(record.value());
         assertEquals(rsUser.getId(), record.value().getId());
         assertEquals(rsUser.getName(), record.value().getName());
