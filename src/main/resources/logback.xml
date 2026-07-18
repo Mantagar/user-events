@@ -13,10 +13,10 @@
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
-    <logger name="org.mantagar.web.userevents.service" level="INFO">
+    <logger name="org.mantagar.web.userevents.post" level="INFO">
         <appender-ref ref="STDOUT_SERVICES" />
     </logger>
-    <logger name="org.mantagar.web.userevents.publisher" level="INFO">
+    <logger name="org.mantagar.web.userevents.user" level="INFO">
         <appender-ref ref="STDOUT_SERVICES" />
     </logger>
 </configuration>

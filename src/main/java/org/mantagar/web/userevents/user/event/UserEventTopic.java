@@ -1,11 +1,11 @@
-package org.mantagar.web.userevents.publisher;
+package org.mantagar.web.userevents.user.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum PublisherTopic {
+public enum UserEventTopic {
     USER_BROWSED("user-browsed"),
     USER_CREATED("user-created");
 

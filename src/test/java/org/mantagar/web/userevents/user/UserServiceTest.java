@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mantagar.web.userevents.publisher.UserEventsPublisher;
 import org.mantagar.web.userevents.user.dto.CreateUserRequest;
+import org.mantagar.web.userevents.user.event.UserEventPublisher;
 import org.mantagar.web.userevents.user.exception.UserAlreadyExistsException;
 import org.mantagar.web.userevents.user.exception.UserNotFoundException;
 import org.mantagar.web.userevents.user.model.User;
@@ -24,7 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 class UserServiceTest {
 
     @Mock private UserRepository mockUserRepository;
-    @Mock private UserEventsPublisher mockEventsPublisher;
+    @Mock private UserEventPublisher mockEventsPublisher;
     @InjectMocks private UserService userService;
 
     @Test

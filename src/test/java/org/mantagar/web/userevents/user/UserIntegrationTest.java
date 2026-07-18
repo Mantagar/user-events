@@ -10,8 +10,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mantagar.web.userevents.publisher.PublisherTopic;
 import org.mantagar.web.userevents.user.dto.CreateUserRequest;
+import org.mantagar.web.userevents.user.event.UserEventTopic;
 import org.mantagar.web.userevents.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
@@ -77,7 +77,7 @@ public class UserIntegrationTest {
                         });
 
         // STEP 2: verify "user-created" event was published
-        var record = consumeKafkaEvent(PublisherTopic.USER_CREATED);
+        var record = consumeKafkaEvent(UserEventTopic.USER_CREATED);
         assertNotNull(record.value());
         assertEquals(1, record.value().getId());
         assertEquals("test", record.value().getName());
@@ -114,15 +114,15 @@ public class UserIntegrationTest {
                         });
 
         // STEP 4: verify "user-browsed" event was published
-        record = consumeKafkaEvent(PublisherTopic.USER_BROWSED);
+        record = consumeKafkaEvent(UserEventTopic.USER_BROWSED);
         assertNotNull(record.value());
         assertEquals(1, record.value().getId());
         assertEquals("test", record.value().getName());
         assertEquals("test", record.value().getSurname());
     }
 
-    private ConsumerRecord<String, User> consumeKafkaEvent(PublisherTopic publisherTopic) {
-        var topic = publisherTopic.getName();
+    private ConsumerRecord<String, User> consumeKafkaEvent(UserEventTopic userEventTopic) {
+        var topic = userEventTopic.getName();
         embeddedKafkaBroker.consumeFromAnEmbeddedTopic(kafkaConsumer, topic);
         return KafkaTestUtils.getSingleRecord(kafkaConsumer, topic);
     }
