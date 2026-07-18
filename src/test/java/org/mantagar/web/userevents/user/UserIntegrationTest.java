@@ -3,7 +3,6 @@ package org.mantagar.web.userevents.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.Map;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -21,7 +20,6 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -38,7 +36,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserIntegrationTest {
-
+    // TODO rename methods to follow BDD, use @DisplayName for descriptions
     @LocalServerPort private int port;
 
     @Autowired private TestRestTemplate restTemplate;
@@ -47,34 +45,32 @@ public class UserIntegrationTest {
 
     @BeforeAll
     public void initKafkaConsumer() {
-        Map<java.lang.String, Object> consumerProperties =
+        var consumerProperties =
                 KafkaTestUtils.consumerProps(embeddedKafkaBroker, "test-group", false);
         consumerProperties.put(
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
         consumerProperties.put(JacksonJsonDeserializer.VALUE_DEFAULT_TYPE, User.class);
-        DefaultKafkaConsumerFactory<String, User> consumerFactory =
-                new DefaultKafkaConsumerFactory<>(consumerProperties);
+        var consumerFactory = new DefaultKafkaConsumerFactory<String, User>(consumerProperties);
         kafkaConsumer = consumerFactory.createConsumer();
     }
 
     @Test
     @Order(1)
     void shouldPublishUserCreated_whenPOST() {
-        String url = "http://localhost:%d/users".formatted(port);
-        CreateUserRequest createUserRequest = new CreateUserRequest("test", "test");
+        var url = "http://localhost:%d/users".formatted(port);
+        var createUserRequest = new CreateUserRequest("test", "test");
 
-        ResponseEntity<User> response =
-                restTemplate.postForEntity(url, createUserRequest, User.class);
+        var responseEntity = restTemplate.postForEntity(url, createUserRequest, User.class);
 
         // verify that the db was reached and the entry was created
-        assertEquals(201, response.getStatusCode().value());
-        User rsUser = response.getBody();
+        assertEquals(201, responseEntity.getStatusCode().value());
+        var rsUser = responseEntity.getBody();
         assertNotNull(rsUser);
         assertEquals(1, rsUser.getId());
         assertEquals("test", rsUser.getName());
         assertEquals("test", rsUser.getSurname());
 
-        ConsumerRecord<String, User> record = consumeKafkaEvent(PublisherTopic.USER_CREATED);
+        var record = consumeKafkaEvent(PublisherTopic.USER_CREATED);
 
         // verify that kafka event was published
         assertNotNull(record.value());
@@ -86,19 +82,19 @@ public class UserIntegrationTest {
     @Test
     @Order(2)
     void shouldPublishUserBrowsed_whenGET() {
-        String url = "http://localhost:%d/users/1".formatted(port);
+        var url = "http://localhost:%d/users/1".formatted(port);
 
-        ResponseEntity<User> response = restTemplate.getForEntity(url, User.class);
+        var responseEntity = restTemplate.getForEntity(url, User.class);
 
         // verify that the db was reached and the entry was returned
-        assertEquals(200, response.getStatusCode().value());
-        User rsUser = response.getBody();
+        assertEquals(200, responseEntity.getStatusCode().value());
+        var rsUser = responseEntity.getBody();
         assertNotNull(rsUser);
         assertEquals(1, rsUser.getId());
         assertEquals("test", rsUser.getName());
         assertEquals("test", rsUser.getSurname());
 
-        ConsumerRecord<String, User> record = consumeKafkaEvent(PublisherTopic.USER_BROWSED);
+        var record = consumeKafkaEvent(PublisherTopic.USER_BROWSED);
 
         // verify that kafka event was published
         assertNotNull(record.value());
@@ -108,7 +104,7 @@ public class UserIntegrationTest {
     }
 
     private ConsumerRecord<String, User> consumeKafkaEvent(PublisherTopic publisherTopic) {
-        String topic = publisherTopic.getName();
+        var topic = publisherTopic.getName();
         embeddedKafkaBroker.consumeFromAnEmbeddedTopic(kafkaConsumer, topic);
         return KafkaTestUtils.getSingleRecord(kafkaConsumer, topic);
     }

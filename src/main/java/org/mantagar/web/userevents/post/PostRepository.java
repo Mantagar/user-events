@@ -10,5 +10,5 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
     Iterable<Long> findAllByUserId(Long userId);
 
-    PostNoUserResponse findByUserIdAndId(Long userId, Long postId);
+    PostNoUserResponse findByIdAndUserId(Long postId, Long userId);
 }

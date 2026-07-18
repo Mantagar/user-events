@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mantagar.web.userevents.user.dto.CreateUserRequest;
 import org.mantagar.web.userevents.user.exception.UserAlreadyExistsException;
-import org.mantagar.web.userevents.user.exception.UserDoesNotExistException;
+import org.mantagar.web.userevents.user.exception.UserNotFoundException;
 import org.mantagar.web.userevents.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -27,7 +27,8 @@ class UserControllerTest {
 
     @Test
     void getAllUserIds_always_returns200() throws Exception {
-        List<Long> expected = List.of(1L, 2L, 3L);
+        var expected = List.of(1L, 2L, 3L);
+
         when(userService.getAllUserIds()).thenReturn(expected);
 
         mockMvc.perform(get("/users"))
@@ -37,7 +38,7 @@ class UserControllerTest {
 
     @Test
     void getUser_userExists_returns200() throws Exception {
-        User expectedUser = new User();
+        var expectedUser = new User();
         expectedUser.setId(5L);
         expectedUser.setName("test");
         expectedUser.setSurname("test");
@@ -53,15 +54,15 @@ class UserControllerTest {
 
     @Test
     void getUser_userNotFound_returns404() throws Exception {
-        when(userService.getUser(5L)).thenThrow(new UserDoesNotExistException(""));
+        when(userService.getUser(5L)).thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(get("/users/5")).andExpect(status().isNotFound());
     }
 
     @Test
     void createUser_userDoesNotExist_returns201() throws Exception {
-        CreateUserRequest testCreateUserRequest = new CreateUserRequest("test", "test");
-        User expectedUser = new User();
+        var testCreateUserRequest = new CreateUserRequest("test", "test");
+        var expectedUser = new User();
         expectedUser.setId(5L);
         expectedUser.setName("test");
         expectedUser.setSurname("test");
@@ -80,7 +81,7 @@ class UserControllerTest {
 
     @Test
     void createUser_userAlreadyExists_returns409() throws Exception {
-        CreateUserRequest expectedUser = new CreateUserRequest("test", "test");
+        var expectedUser = new CreateUserRequest("test", "test");
 
         when(userService.createUser(expectedUser)).thenThrow(new UserAlreadyExistsException(""));
 

@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mantagar.web.userevents.post.dto.CreatePostRequest;
 import org.mantagar.web.userevents.post.dto.PostNoUserResponse;
-import org.mantagar.web.userevents.user.exception.UserDoesNotExistException;
+import org.mantagar.web.userevents.user.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -25,7 +25,8 @@ class PostControllerTest {
 
     @Test
     void getAllUserPostIds_userExists_returns200() throws Exception {
-        List<Long> expected = List.of(1L, 2L, 3L);
+        var expected = List.of(1L, 2L, 3L);
+
         when(postService.getAllUserPostIds(5L)).thenReturn(expected);
 
         mockMvc.perform(get("/users/5/posts"))
@@ -35,14 +36,15 @@ class PostControllerTest {
 
     @Test
     void getAllUserPostIds_userNotFound_returns404() throws Exception {
-        when(postService.getAllUserPostIds(5L)).thenThrow(new UserDoesNotExistException(""));
+        when(postService.getAllUserPostIds(5L)).thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(get("/users/5/posts")).andExpect(status().isNotFound());
     }
 
     @Test
     void getUserPost_userExists_returns200() throws Exception {
-        PostNoUserResponse expected = new PostNoUserResponse(10L, "test");
+        var expected = new PostNoUserResponse(10L, "test");
+
         when(postService.getUserPost(5L, 10L)).thenReturn(expected);
 
         mockMvc.perform(get("/users/5/posts/10"))
@@ -53,15 +55,17 @@ class PostControllerTest {
 
     @Test
     void getUserPost_userNotFound_returns404() throws Exception {
-        when(postService.getUserPost(5L, 10L)).thenThrow(new UserDoesNotExistException(""));
+        when(postService.getUserPost(5L, 10L)).thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(get("/users/5/posts/10")).andExpect(status().isNotFound());
     }
 
     @Test
     void createUserPost_userExists_returns201() throws Exception {
-        CreatePostRequest request = new CreatePostRequest(5L, "test");
-        when(postService.createPost(request)).thenReturn(new PostNoUserResponse(10L, "test"));
+        var createPostRequest = new CreatePostRequest(5L, "test");
+
+        when(postService.createPost(createPostRequest))
+                .thenReturn(new PostNoUserResponse(10L, "test"));
 
         mockMvc.perform(
                         post("/users/5/posts")
@@ -74,8 +78,9 @@ class PostControllerTest {
 
     @Test
     void createUserPost_userDoesNotExist_returns404() throws Exception {
-        CreatePostRequest request = new CreatePostRequest(5L, "test");
-        when(postService.createPost(request)).thenThrow(new UserDoesNotExistException(""));
+        var createPostRequest = new CreatePostRequest(5L, "test");
+
+        when(postService.createPost(createPostRequest)).thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(
                         post("/users/5/posts")
