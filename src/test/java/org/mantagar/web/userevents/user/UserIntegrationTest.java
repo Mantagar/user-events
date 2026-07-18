@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserIntegrationTest {
     // TODO rename methods to follow BDD, use @DisplayName for descriptions
+    // TODO add critical failure path test (rollback test)
     @LocalServerPort private int port;
     @Autowired private UserController userController;
     private RestTestClient restTestClient;

@@ -10,6 +10,4 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     @Query("SELECT u.id FROM User u")
     Iterable<Long> findAllIds();
-
-    boolean existsByNameAndSurname(String name, String surname);
 }

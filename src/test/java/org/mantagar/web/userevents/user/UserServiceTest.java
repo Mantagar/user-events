@@ -18,6 +18,7 @@ import org.mantagar.web.userevents.user.model.User;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -61,7 +62,6 @@ class UserServiceTest {
         expectedUser.setName("test");
         expectedUser.setSurname("test");
 
-        when(mockUserRepository.existsByNameAndSurname("test", "test")).thenReturn(false);
         when(mockUserRepository.save(any(User.class))).thenReturn(expectedUser);
 
         assertEquals(expectedUser, userService.createUser(createUserRequest));
@@ -75,7 +75,8 @@ class UserServiceTest {
         expectedUser.setName("test");
         expectedUser.setSurname("test");
 
-        when(mockUserRepository.existsByNameAndSurname("test", "test")).thenReturn(true);
+        when(mockUserRepository.save(any(User.class)))
+                .thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(
                 UserAlreadyExistsException.class, () -> userService.createUser(createUserRequest));
