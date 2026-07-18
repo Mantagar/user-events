@@ -1,4 +1,4 @@
-package org.mantagar.web.userevents.exception;
+package org.mantagar.web.userevents.user.exception;
 
 public class UserDoesNotExistException extends RuntimeException {
     public UserDoesNotExistException(String message) {

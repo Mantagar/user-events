@@ -1,10 +1,9 @@
-package org.mantagar.web.userevents.controller;
+package org.mantagar.web.userevents.user;
 
 import lombok.RequiredArgsConstructor;
-import org.mantagar.web.userevents.dto.UserNameSurnameDTO;
-import org.mantagar.web.userevents.entity.User;
-import org.mantagar.web.userevents.exception.UserAlreadyExistsException;
-import org.mantagar.web.userevents.service.UserService;
+import org.mantagar.web.userevents.user.dto.CreateUserRequest;
+import org.mantagar.web.userevents.user.exception.UserAlreadyExistsException;
+import org.mantagar.web.userevents.user.model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,8 +34,8 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody UserNameSurnameDTO userNameSurnameDTO) {
-        return userService.createUser(userNameSurnameDTO);
+    public User createUser(@RequestBody CreateUserRequest createUserRequest) {
+        return userService.createUser(createUserRequest);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)

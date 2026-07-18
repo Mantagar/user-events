@@ -1,9 +1,8 @@
-package org.mantagar.web.userevents.controller;
+package org.mantagar.web.userevents.post;
 
 import lombok.RequiredArgsConstructor;
-import org.mantagar.web.userevents.dto.PostContentDTO;
-import org.mantagar.web.userevents.dto.PostNoUserDTO;
-import org.mantagar.web.userevents.service.PostService;
+import org.mantagar.web.userevents.post.dto.CreatePostRequest;
+import org.mantagar.web.userevents.post.dto.PostNoUserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,13 +25,13 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public PostNoUserDTO getUserPost(@PathVariable Long userId, @PathVariable Long postId) {
+    public PostNoUserResponse getUserPost(@PathVariable Long userId, @PathVariable Long postId) {
         return postService.getUserPost(userId, postId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PostNoUserDTO createUserPost(@RequestBody PostContentDTO postDTO) {
-        return postService.createPost(postDTO);
+    public PostNoUserResponse createUserPost(@RequestBody CreatePostRequest createPostRequest) {
+        return postService.createPost(createPostRequest);
     }
 }

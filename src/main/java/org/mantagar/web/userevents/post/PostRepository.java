@@ -1,7 +1,7 @@
-package org.mantagar.web.userevents.repository;
+package org.mantagar.web.userevents.post;
 
-import org.mantagar.web.userevents.dto.PostNoUserDTO;
-import org.mantagar.web.userevents.entity.Post;
+import org.mantagar.web.userevents.post.dto.PostNoUserResponse;
+import org.mantagar.web.userevents.post.model.Post;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,5 +10,5 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
     Iterable<Long> findAllByUserId(Long userId);
 
-    PostNoUserDTO findByUserIdAndId(Long userId, Long postId);
+    PostNoUserResponse findByUserIdAndId(Long userId, Long postId);
 }

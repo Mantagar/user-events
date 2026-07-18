@@ -1,4 +1,4 @@
-package org.mantagar.web.userevents;
+package org.mantagar.web.userevents.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.mantagar.web.userevents.dto.UserNameSurnameDTO;
-import org.mantagar.web.userevents.entity.User;
 import org.mantagar.web.userevents.publisher.PublisherTopic;
+import org.mantagar.web.userevents.user.dto.CreateUserRequest;
+import org.mantagar.web.userevents.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
@@ -37,7 +37,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 @EmbeddedKafka(topics = {"user-created", "user-browsed"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class EndToEndIntegrationTest {
+public class UserIntegrationTest {
 
     @LocalServerPort private int port;
 
@@ -51,9 +51,7 @@ public class EndToEndIntegrationTest {
                 KafkaTestUtils.consumerProps(embeddedKafkaBroker, "test-group", false);
         consumerProperties.put(
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
-        consumerProperties.put(
-                JacksonJsonDeserializer.VALUE_DEFAULT_TYPE,
-                org.mantagar.web.userevents.entity.User.class);
+        consumerProperties.put(JacksonJsonDeserializer.VALUE_DEFAULT_TYPE, User.class);
         DefaultKafkaConsumerFactory<String, User> consumerFactory =
                 new DefaultKafkaConsumerFactory<>(consumerProperties);
         kafkaConsumer = consumerFactory.createConsumer();
@@ -63,10 +61,10 @@ public class EndToEndIntegrationTest {
     @Order(1)
     void shouldPublishUserCreated_whenPOST() {
         String url = "http://localhost:%d/users".formatted(port);
-        UserNameSurnameDTO rqUserNameSurnameDTO = new UserNameSurnameDTO("test", "test");
+        CreateUserRequest createUserRequest = new CreateUserRequest("test", "test");
 
         ResponseEntity<User> response =
-                restTemplate.postForEntity(url, rqUserNameSurnameDTO, User.class);
+                restTemplate.postForEntity(url, createUserRequest, User.class);
 
         // verify that the db was reached and the entry was created
         assertEquals(201, response.getStatusCode().value());

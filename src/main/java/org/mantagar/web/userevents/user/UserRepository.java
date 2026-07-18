@@ -1,6 +1,6 @@
-package org.mantagar.web.userevents.repository;
+package org.mantagar.web.userevents.user;
 
-import org.mantagar.web.userevents.entity.User;
+import org.mantagar.web.userevents.user.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

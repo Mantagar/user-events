@@ -1,4 +1,4 @@
-package org.mantagar.web.userevents.entity;
+package org.mantagar.web.userevents.user.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

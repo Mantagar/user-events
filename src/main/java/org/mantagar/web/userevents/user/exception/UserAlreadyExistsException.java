@@ -1,4 +1,4 @@
-package org.mantagar.web.userevents.exception;
+package org.mantagar.web.userevents.user.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
     public UserAlreadyExistsException(String message) {

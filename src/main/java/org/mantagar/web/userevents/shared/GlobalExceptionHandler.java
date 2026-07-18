@@ -1,6 +1,6 @@
-package org.mantagar.web.userevents.controller;
+package org.mantagar.web.userevents.shared;
 
-import org.mantagar.web.userevents.exception.UserDoesNotExistException;
+import org.mantagar.web.userevents.user.exception.UserDoesNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

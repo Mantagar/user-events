@@ -1,7 +1,7 @@
 package org.mantagar.web.userevents.publisher;
 
 import lombok.RequiredArgsConstructor;
-import org.mantagar.web.userevents.entity.User;
+import org.mantagar.web.userevents.user.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UserEventsPublisher {
-
+    // TODO move this entire package somewhere
     private static final Logger LOG = LoggerFactory.getLogger(UserEventsPublisher.class);
 
     private final KafkaTemplate<String, User> kafkaTemplate;

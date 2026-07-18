@@ -1,4 +1,4 @@
-package org.mantagar.web.userevents.service;
+package org.mantagar.web.userevents.user;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mantagar.web.userevents.dto.UserNameSurnameDTO;
-import org.mantagar.web.userevents.entity.User;
-import org.mantagar.web.userevents.exception.UserAlreadyExistsException;
-import org.mantagar.web.userevents.exception.UserDoesNotExistException;
 import org.mantagar.web.userevents.publisher.UserEventsPublisher;
-import org.mantagar.web.userevents.repository.UserRepository;
+import org.mantagar.web.userevents.user.dto.CreateUserRequest;
+import org.mantagar.web.userevents.user.exception.UserAlreadyExistsException;
+import org.mantagar.web.userevents.user.exception.UserDoesNotExistException;
+import org.mantagar.web.userevents.user.model.User;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -54,7 +53,7 @@ class UserServiceTest {
 
     @Test
     void shouldReturnUser_whenUserCreated() {
-        UserNameSurnameDTO testUserNameSurnameDTO = new UserNameSurnameDTO("test", "test");
+        CreateUserRequest testCreateUserRequest = new CreateUserRequest("test", "test");
         User expectedUser = new User();
         expectedUser.setId(5L);
         expectedUser.setName("test");
@@ -62,13 +61,13 @@ class UserServiceTest {
         when(mockUserRepository.existsByNameAndSurname("test", "test")).thenReturn(false);
         when(mockUserRepository.save(any(User.class))).thenReturn(expectedUser);
 
-        User createdUser = assertDoesNotThrow(() -> userService.createUser(testUserNameSurnameDTO));
+        User createdUser = assertDoesNotThrow(() -> userService.createUser(testCreateUserRequest));
         assertEquals("", expectedUser, createdUser);
     }
 
     @Test
     void shouldThrowException_whenUserAlreadyExists() {
-        UserNameSurnameDTO testUserNameSurnameDTO = new UserNameSurnameDTO("test", "test");
+        CreateUserRequest testCreateUserRequest = new CreateUserRequest("test", "test");
         User expectedUser = new User();
         expectedUser.setId(5L);
         expectedUser.setName("test");
@@ -77,6 +76,6 @@ class UserServiceTest {
 
         assertThrows(
                 UserAlreadyExistsException.class,
-                () -> userService.createUser(testUserNameSurnameDTO));
+                () -> userService.createUser(testCreateUserRequest));
     }
 }

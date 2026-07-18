@@ -1,4 +1,4 @@
-package org.mantagar.web.userevents.entity;
+package org.mantagar.web.userevents.post.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +10,7 @@ import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.mantagar.web.userevents.user.model.User;
 
 @Entity
 @Getter
