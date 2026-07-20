@@ -2,9 +2,14 @@
 
 Expose endpoints using Spring MVC.
 
-POST endpoint creates a user entry in Postgres and publishes it to 'user-created' Kafka topic.
-
-GET endpoint returns a user entry from Postgres and publishes it to 'user-browsed' Kafka topic.
+| Endpoint                       | Method | Function                                          |
+|:-------------------------------|:------:|:--------------------------------------------------|
+| /users                         |  GET   | fetch ids of all the users                        |
+| /users                         |  POST  | create a user, publish 'user-created' Kafka event |
+| /users/{userId}                |  GET   | fetch a user, publish 'user-browsed' Kafka event  |
+| /users/{userId}/posts          |  GET   | fetch ids of all posts owned by the user          |
+| /users/{userId}/posts          |  POST  | create a post                                     |
+| /users/{userId}/posts/{postId} |  GET   | fetch a post                                      |
 
 # Build
 

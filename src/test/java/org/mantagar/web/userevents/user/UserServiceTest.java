@@ -62,7 +62,7 @@ class UserServiceTest {
         expectedUser.setName("test");
         expectedUser.setSurname("test");
 
-        when(mockUserRepository.save(any(User.class))).thenReturn(expectedUser);
+        when(mockUserRepository.saveAndFlush(any(User.class))).thenReturn(expectedUser);
 
         assertEquals(expectedUser, userService.createUser(createUserRequest));
     }
@@ -75,7 +75,7 @@ class UserServiceTest {
         expectedUser.setName("test");
         expectedUser.setSurname("test");
 
-        when(mockUserRepository.save(any(User.class)))
+        when(mockUserRepository.saveAndFlush(any(User.class)))
                 .thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(

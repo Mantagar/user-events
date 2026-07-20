@@ -45,7 +45,7 @@ public class UserService {
         user.setSurname(createUserRequest.surname());
         User createdUser = null;
         try {
-            createdUser = userRepository.save(user);
+            createdUser = userRepository.saveAndFlush(user);
         } catch (DataIntegrityViolationException e) {
             handleDuplicatedUser(createUserRequest);
         }
