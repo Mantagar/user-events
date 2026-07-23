@@ -10,7 +10,6 @@ import org.mantagar.web.userevents.user.exception.UserNotFoundException;
 import org.mantagar.web.userevents.user.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,15 +39,15 @@ public class UserService {
 
     @Transactional
     public User createUser(CreateUserRequest createUserRequest) {
+        if (userRepository.existsByNameAndSurname(
+                createUserRequest.name(), createUserRequest.surname())) {
+            handleDuplicatedUser(createUserRequest);
+        }
         final User user = new User();
         user.setName(createUserRequest.name());
         user.setSurname(createUserRequest.surname());
-        User createdUser = null;
-        try {
-            createdUser = userRepository.saveAndFlush(user);
-        } catch (DataIntegrityViolationException e) {
-            handleDuplicatedUser(createUserRequest);
-        }
+        User createdUser = userRepository.save(user);
+        // TODO decouple (OUTBOX pattern)
         userEventPublisher.publishEvent(UserEventTopic.USER_CREATED, createdUser);
         return createdUser;
     }

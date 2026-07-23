@@ -61,7 +61,8 @@ public class UserIntegrationTest {
     }
 
     @Test
-    @DisplayName("Create a user and then fetch it, verifying that the appropriate events are published to Kafka")
+    @DisplayName(
+            "Create a user and then fetch it, verifying that the appropriate events are published to Kafka")
     void createUser_getUser() {
         // STEP 1: create a User using REST API
         var createUserRequest = new CreateUserRequest("test", "test");

@@ -46,7 +46,8 @@ public class PostIntegrationTest {
     }
 
     @Test
-    @DisplayName("Create a User, then create a Post for that User, and finally fetch the created Post")
+    @DisplayName(
+            "Create a User, then create a Post for that User, and finally fetch the created Post")
     void createUser_createPost_getPost() {
         // STEP 1: create a User using REST API
         var createUserRequest = new CreateUserRequest("test", "test");
@@ -61,7 +62,8 @@ public class PostIntegrationTest {
     }
 
     @Test
-    @DisplayName("Attempt to fetch posts for a non-existent user, expecting a 404 Not Found response")
+    @DisplayName(
+            "Attempt to fetch posts for a non-existent user, expecting a 404 Not Found response")
     void getPosts_userNotFound() {
         restTestClient.get().uri("/posts/" + 0L).exchange().expectStatus().isNotFound();
     }
