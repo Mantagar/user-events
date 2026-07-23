@@ -13,7 +13,7 @@ Expose endpoints using Spring MVC.
 
 # Build
 
-    ./mvnw verify
+    ./gradlew build
 
 # Run
     
