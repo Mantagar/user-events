@@ -1,5 +1,6 @@
 package org.mantagar.web.userevents.user;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mantagar.web.userevents.user.dto.CreateUserRequest;
 import org.mantagar.web.userevents.user.exception.UserAlreadyExistsException;
@@ -23,7 +24,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public Iterable<Long> getAllUserIds() {
+    public List<Long> getAllUserIds() {
         return userService.getAllUserIds();
     }
 

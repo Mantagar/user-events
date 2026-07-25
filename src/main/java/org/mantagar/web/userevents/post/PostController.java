@@ -1,5 +1,6 @@
 package org.mantagar.web.userevents.post;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mantagar.web.userevents.post.dto.CreatePostRequest;
 import org.mantagar.web.userevents.post.dto.PostNoUserResponse;
@@ -20,8 +21,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public Iterable<Long> getAllUserPostIds(@PathVariable Long userId) {
-        return postService.getAllUserPostIds(userId);
+    public List<Long> getAllUserPostIds(@PathVariable Long userId) {
+        return postService.getAllPostIdsOfUser(userId);
     }
 
     @GetMapping("/{postId}")

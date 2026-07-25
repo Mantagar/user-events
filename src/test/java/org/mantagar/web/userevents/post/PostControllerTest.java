@@ -27,7 +27,7 @@ class PostControllerTest {
     void getAllUserPostIds_userExists_returns200() throws Exception {
         var expected = List.of(1L, 2L, 3L);
 
-        when(postService.getAllUserPostIds(5L)).thenReturn(expected);
+        when(postService.getAllPostIdsOfUser(5L)).thenReturn(expected);
 
         mockMvc.perform(get("/users/5/posts"))
                 .andExpect(status().isOk())
@@ -36,7 +36,7 @@ class PostControllerTest {
 
     @Test
     void getAllUserPostIds_userNotFound_returns404() throws Exception {
-        when(postService.getAllUserPostIds(5L)).thenThrow(new UserNotFoundException(""));
+        when(postService.getAllPostIdsOfUser(5L)).thenThrow(new UserNotFoundException(""));
 
         mockMvc.perform(get("/users/5/posts")).andExpect(status().isNotFound());
     }

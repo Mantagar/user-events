@@ -2,6 +2,7 @@ package org.mantagar.web.userevents.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -72,7 +73,9 @@ public class UserIntegrationTest {
         consumeKafkaEvent(UserEventTopic.USER_CREATED);
 
         // STEP 3: fetch the created User using REST API
-        UserRestUtils.getUser(restTestClient, userId);
+        var createdUser = UserRestUtils.getUser(restTestClient, userId);
+        var listOfIds = UserRestUtils.getUserIds(restTestClient);
+        assertTrue(listOfIds.contains(createdUser.getId()));
 
         // STEP 4: verify "user-browsed" event was published
         consumeKafkaEvent(UserEventTopic.USER_BROWSED);

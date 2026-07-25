@@ -1,5 +1,6 @@
 package org.mantagar.web.userevents.post;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.mantagar.web.userevents.post.dto.CreatePostRequest;
@@ -23,9 +24,9 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public Iterable<Long> getAllUserPostIds(Long userId) {
+    public List<Long> getAllPostIdsOfUser(Long userId) {
         verifyUserExists(userId);
-        return postRepository.findAllByUserId(userId);
+        return postRepository.findAllIdsByUserId(userId);
     }
 
     public PostNoUserResponse getUserPost(Long userId, Long postId) {

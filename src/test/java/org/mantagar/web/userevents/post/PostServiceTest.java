@@ -26,20 +26,20 @@ public class PostServiceTest {
     @InjectMocks private PostService postService;
 
     @Test
-    void getAllUserPostIds_userExists_returnsIds() {
+    void getAllUserPostIds_Exists_returnsIdsOfUser() {
         var expected = List.of(1L, 2L, 3L);
 
         when(mockUserRepository.existsById(5L)).thenReturn(true);
-        when(mockPostRepository.findAllByUserId(5L)).thenReturn(expected);
+        when(mockPostRepository.findAllIdsByUserId(5L)).thenReturn(expected);
 
-        assertEquals(expected, postService.getAllUserPostIds(5L));
+        assertEquals(expected, postService.getAllPostIdsOfUser(5L));
     }
 
     @Test
-    void getAllUserPostIds_userDoesNotExist_throwsUserNotFoundException() {
+    void getAllUserPostIds_userDoesNotExist_throwsNotFoundExceptionOfUser() {
         when(mockUserRepository.existsById(5L)).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () -> postService.getAllUserPostIds(5L));
+        assertThrows(UserNotFoundException.class, () -> postService.getAllPostIdsOfUser(5L));
     }
 
     @Test

@@ -18,7 +18,7 @@ Expose endpoints using Spring MVC.
 # Run
     
     docker compose up
-    java -jar target/UserEvents-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev 
+    java -jar build/libs/UserEvents-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev 
 
 # Debug
 

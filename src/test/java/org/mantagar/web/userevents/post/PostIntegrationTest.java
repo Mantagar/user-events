@@ -1,5 +1,7 @@
 package org.mantagar.web.userevents.post;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -58,7 +60,9 @@ public class PostIntegrationTest {
         Long postId = PostRestUtils.createPost(restTestClient, createPostRequest);
 
         // STEP 3: fetch the created Post using REST API
-        PostRestUtils.getPost(restTestClient, userId, postId);
+        var postNoUserResponse = PostRestUtils.getPost(restTestClient, userId, postId);
+        var listOfIds = PostRestUtils.getPostIds(restTestClient, postId);
+        assertTrue(listOfIds.contains(userId));
     }
 
     @Test

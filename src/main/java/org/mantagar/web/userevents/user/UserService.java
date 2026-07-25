@@ -1,5 +1,6 @@
 package org.mantagar.web.userevents.user;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.mantagar.web.userevents.user.dto.CreateUserRequest;
@@ -23,7 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserEventPublisher userEventPublisher;
 
-    public Iterable<Long> getAllUserIds() {
+    public List<Long> getAllUserIds() {
         return userRepository.findAllIds();
     }
 
